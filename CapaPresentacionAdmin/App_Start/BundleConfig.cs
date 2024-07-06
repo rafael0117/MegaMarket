@@ -33,7 +33,7 @@ namespace CapaPresentacionAdmin
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/sweetalert.css",
-                      "~/Content/jquery-ui.css",
+                      "~/Content/themes/base/jquery-ui.css",
                       "~/Content/DataTables/css/jquery.dataTables.css",
                       "~/Content/DataTables/css/responsive.dataTables.css"
                       ));
