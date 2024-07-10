@@ -62,11 +62,7 @@ namespace CapaNegocio
                     Mensaje = "No se puede enviar el correo";
                     return 0;
                 }
-
-                obj.Clave = CN_Recursos.ConvertirSha256(clave);
-                return objCapaDato.Registrar(obj, out Mensaje);
-
-            }
+           }
             else
             {
                 return 0;

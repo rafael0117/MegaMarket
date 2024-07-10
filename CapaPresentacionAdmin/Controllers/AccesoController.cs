@@ -43,7 +43,7 @@ namespace CapaPresentacionAdmin.Controllers
                     TempData["IdUsuario"] = oUsuario.IdUsuario;
                     return RedirectToAction("CambiarClave");
                 }
-                FormsAuthentication.SetAuthCookie(oUsuario.Correo,false)
+                FormsAuthentication.SetAuthCookie(oUsuario.Correo, false);
 
                 ViewBag.Error = null;
                 return RedirectToAction("Index","Home");
@@ -75,7 +75,7 @@ namespace CapaPresentacionAdmin.Controllers
             nuevaclave = CN_Recursos.ConvertirSha256(nuevaclave);
             string mensaje = string.Empty;
             bool respuesta = new CN_Usuarios().CambiarClave(int.Parse(idusuario), nuevaclave, out mensaje);
-            if (respuesta = true)
+            if (respuesta)
             {
                 return RedirectToAction("Index");
             }
