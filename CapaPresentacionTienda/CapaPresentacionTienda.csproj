@@ -122,6 +122,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccesoController.cs" />
     <Compile Include="Controllers\TiendaController.cs" />
+    <Compile Include="Filter\ValidarSessionAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -231,6 +232,10 @@
     <Content Include="webfonts\fa-brands-400.eot" />
     <Content Include="Scripts\loadingoverlay.min.js.map" />
     <Content Include="Views\Tienda\Index.cshtml" />
+    <Content Include="Views\Tienda\DetalleProducto.cshtml" />
+    <Content Include="Views\Tienda\Carrito.cshtml" />
+    <Content Include="Views\Tienda\PagoEfectuado.cshtml" />
+    <Content Include="Views\Tienda\MisCompras.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

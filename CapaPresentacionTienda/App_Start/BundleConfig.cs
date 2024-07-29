@@ -11,7 +11,7 @@ namespace CapaPresentacionTienda
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/loadingoverlay.min.js",
-                        "~/Scripts/sweetalert.js",
+                        "~/Scripts/sweetalert.min.js",
                         "~/Scripts/fontawesome/all.min.js"
                         
 

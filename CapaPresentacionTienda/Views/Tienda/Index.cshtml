@@ -121,38 +121,170 @@
 </section>
 @section scripts{
     <script>
-        $(document).ready(function () {
-            MostrarCategorias();
-        })
+$(document).ready(function () {
+    MostrarCategorias();
+    MostrarProductos(0,0);
+});
 
-        function MostrarCategorias() {
-            jQuery.ajax({
-                url: "@Url.Action("ListaCategorias", "Tienda")",
-                type: "GET",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (response) {
-                    $("#contenedor_categoria").LoadingOverlay("hide");
-                    $("<div>").addClass("form-check").append(
-                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": "0", "id": "cx", "checked": "checked" }),
-                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "cx" })
-                    ).appendTo("#contenedor_categoria");
-                    $.each(response.data, function (i, element) {
-                        $("<div>").addClass("form-check").append(
-                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": element.IdCategoria, "id": "c" + i }),
-                            $("<label>").addClass("form-check-label").text(element.Descripcion).attr({ "for": "c" + i })
-                        ).appendTo("#contenedor_categoria");
+function MostrarCategorias() {
+    $.ajax({
+        url: '@Url.Action("ListaCategorias", "Tienda")', // Verifica la URL generada aquí
+        type: "GET",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            $("#contenedor_categoria").LoadingOverlay("hide");
+            $("<div>").addClass("form-check").append(
+                $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": "0", "id": "cx", "checked": "checked" }),
+                $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "cx" })
+            ).appendTo("#contenedor_categoria");
 
-                    })
-                },
-                beforeSend: function () {
-                    $("#contenedor_categoria").LoadingOverlay("show");
-                }
+            $.each(response.data, function (i, element) {
+                $("<div>").addClass("form-check").append(
+                    $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "categoria", "value": element.IdCategoria, "id": "c" + i }),
+                    $("<label>").addClass("form-check-label").text(element.Descripcion).attr({ "for": "c" + i })
+                ).appendTo("#contenedor_categoria");
             });
 
+            MostrarMarca();
+        },
+        beforeSend: function () {
+            $("#contenedor_categoria").LoadingOverlay("show");
+        },
+        error: function (xhr, status, error) {
+            console.error("Error: " + error);
+            $("#contenedor_categoria").LoadingOverlay("hide");
         }
-  
+    });
+}
 
+
+
+           function MostrarMarca() {
+    var _idcategoria = $("input[name=categoria]:checked").val();
+
+    $.ajax({
+        url: "@Url.Action("ListarMarcaxCategoria", "Tienda")",
+        type: "POST",
+        data: JSON.stringify({ idcategoria: _idcategoria }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            $("#contenedor_marca").LoadingOverlay("hide");
+            $("#contenedor_marca").empty(); // Limpia el contenedor antes de agregar nuevos elementos
+            $("<div>").addClass("form-check").append(
+                $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "marca", "value": "0", "id": "mx", "checked": "checked" }),
+                $("<label>").addClass("form-check-label").text("Todos").attr({ "for": "mx" })
+            ).appendTo("#contenedor_marca");
+            $.each(response.data, function (i, element) {
+                $("<div>").addClass("form-check").append(
+                    $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "marca", "value": element.IdMarca, "id": "m" + i }), // Cambié IdCategoria por IdMarca
+                    $("<label>").addClass("form-check-label").text(element.Descripcion).attr({ "for": "m" + i })
+                ).appendTo("#contenedor_marca");
+            });
+        },
+        beforeSend: function () {
+            $("#contenedor_marca").LoadingOverlay("show");
+        },
+        error: function (xhr, status, error) {
+            console.error("Error: " + error);
+            $("#contenedor_marca").LoadingOverlay("hide");
+        }
+    });
+}
+
+        $(document).on("change", "input[name=categoria]", function () {
+            MostrarMarca()
+
+        })
+
+
+
+
+    function MostrarProductos(_idcategoria, _idmarca) {
+    $.ajax({
+        url: "@Url.Action("ListarProducto", "Tienda")",
+        type: "POST",
+        data: JSON.stringify({ idcategoria: _idcategoria, idmarca: _idmarca }),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            $("#contenedor_producto").LoadingOverlay("hide");
+            $("#contenedor_producto").empty(); // Limpia el contenedor antes de agregar nuevos elementos
+
+            $.each(response.data, function (i, element) {
+                $("<div>").addClass("col mb-5").append(
+                    $("<div>").addClass("card h-100").append(
+                        $("<img>").addClass("card-img-top").attr({ "src": "data:image/" + element.Extension + ";base64," + element.Base64 }),
+                        $("<div>").addClass("card-body p-4").append(
+                            $("<div>").addClass("text-center").append(
+                                $("<h5>").addClass("fw-bolder").text(element.Nombre),
+                                "$" + element.Precio.toFixed(2) + " USD"
+                            )
+                        ),
+                        $("<div>").addClass("card-footer p-2 pt-0 border-top-0 bg-transparent").append(
+                            $("<div>").addClass("d-grid gap-2").append(
+                                @if (Session["Cliente"] != null) {
+                                    @:$("<button>").addClass("btn btn-success mt-auto agregarcarrito").data("idproducto", element.IdProducto).text("Agregar a carrito"),
+                                }
+                                $("<a>").addClass("btn btn-dark mt-auto")
+                                    .attr({ "href": "@Url.Action("DetalleProducto", "Tienda")" + "?idproducto=" + element.IdProducto })
+                                    .text("Ver detalle")
+                            )
+                        )
+                    )
+                ).appendTo("#contenedor_producto");
+            });
+        },
+        beforeSend: function () {
+            $("#contenedor_producto").LoadingOverlay("show");
+        },
+        error: function (xhr, status, error) {
+            console.error("Error: " + error);
+            $("#contenedor_producto").LoadingOverlay("hide");
+        }
+    });
+}
+
+
+        $("#btnaplicarfiltro").click(function () {
+            _idcategoria = $("input[name=categoria]:checked").val();
+            _idmarca = $("input[name=marca]:checked").val();
+            MostrarProductos(_idcategoria, _idmarca)
+        })
+
+
+        $(document).on("click", "button.agregarcarrito", function () {
+ 
+            jQuery.ajax({
+                url: '@Url.Action("AgregarCarrito","Tienda")',
+                type: "POST",
+                data: JSON.stringify({ IdProducto: $(this).data("idproducto") }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.respuesta) {
+                        MostrarCantidadCarrito();
+                        swal({
+                            title: "Agregado al carrito",
+                            text: "¿Desea ir al carrito?",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-primary",
+                            confirmButtonText: "Si",
+                            cancelButtonText: "No",
+                            closeOnConfirm: true
+                        }, function () {
+                            window.location.href = '@Url.Action("Carrito","Tienda")'
+                        })
+                    }
+                    else {
+                        swal("", data.mensaje, "warning");
+                    }
+                }
+
+            })
+        })
 
     </script>
 }
